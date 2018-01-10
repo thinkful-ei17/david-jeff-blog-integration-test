@@ -203,6 +203,22 @@ describe('Blog Posts API resource', function() {
   //Delete
 
   describe('DELETE endpoint', function() {
-    it('delete a restaurant by id',)
+    it('should delete a restaurant by id', function() {
+      let blog;
+
+      return BlogPost
+        .findOne()
+        .then(function(_blog) {
+          blog = _blog;
+          return chai.request(app).delete(`/posts/${blog.id}`);
+        })
+        .then(function(res) {
+          res.status.should.be.equal(204);
+          return BlogPost.findById(blog.id);
+        })
+        .then(function(_blog) {
+          expect(_blog).to.be.null;
+        });
+    });
   });
 });
