@@ -2,3 +2,10 @@ language: node_js
 node_js: node
 services:
 - mongodb
+deploy:
+  provider: heroku
+  api_key:
+    secure: 1gaZuS2OScUJT9FJ3vnOCMXrycqhzm4jgpqdtCnS0FNk9xaCBX9NIhX6g9mF3dYPjc0CyBiBCBxTr4rc9BTyGFcByrfjPeRyLozUi1T0onFS3SLuYB45i8IDo9V6mvrVyibReSlV+vwnNYOFL3x0lMl0xScWwlkhnBjJjiiag//iojArwNfaNyyifIwekLpp/yaWlwJtZnzhiWSUpWXe0/sAOmHs2Qwugx9lELzvw80jfWMkpTfU7W/14OlCjLVGBhhP1HkHDDQdYUu2aTK6S4DLPc2xvDHGMLqKguB9D71bng1/jsFJhEaEu7YhqHYANoO1sVGdhKA+OIu08rXe9pZNZvti8k5Y3xnNEeggHTtyQM7vAgo7Rkm5q00vyc45sSScXrqDDGPBsB9XsCX+4oRpJnxQj2k4Onf1ERE8ut+dpB2qvZy86jxzwVtdHlEYytevU2g/9OsgzZR6ghJ8GHDX1dCBbKZUo7S3xyofb90HdlUFz6jUcN0DNBQGfk52jdVTgFmUZDadGln1y5lPF6l70XXiWRd5h0wk2R6ksft7eAFsdDnuBO1OH/IZYWnuW0rQO6mHNUnv8TD5VXkv5NASO5VKVYOcTfY/uBpd6sLdkJ84nbCYL8elFM6dH+RQ1S01I5oqWt5gU/1tZg5bwY1Dtp6JI/UjrjGnSyhiEyo=
+  app: blog-test-integration-app
+  on:
+    repo: thinkful-ei17/david-jeff-blog-integration-test
