@@ -15,10 +15,7 @@ const {TEST_DATABASE_URL} = require('../config');
 
 chai.use(chaiHttp);
 
-//Seeding data goes here
-
-
-
+//Seeding data
 function seedBlogPostData() {
   const seedData = [];
 
@@ -62,7 +59,6 @@ function generateLastName() {
   return lastNames[Math.floor(Math.random() * lastNames.length)];
 }
 
-
 function generateBlogPostData() {
   return {
     title: generateTitle(),
@@ -80,7 +76,6 @@ function tearDownDb() {
 }
 
 describe('Blog Posts API resource', function() {
-
   before(function() {
     return runServer(TEST_DATABASE_URL);
   });
