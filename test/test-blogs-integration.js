@@ -40,16 +40,26 @@ function generateContent() {
 
 // function generateAuthor() {
 //   const authors = ['Author #1', 'Author #2', 'Author #3'];
-//   const author =  authors[Math.floor(Math.random() * authors.length)];
+//   return authors[Math.floor(Math.random() * authors.length)];
+// }
+
+// function generateAuthor() {
+//   const authors = ['Author #1', 'Author #2', 'Author #3'];
+//   const author = authors[Math.floor(Math.random() * authors.length)];
 //   return {
 //     firstName: author.firstName,
 //     lastName: author.lastName
 //   };
 // }
 
-function generateAuthor() {
-  const authors = ['Author #1', 'Author #2', 'Author #3'];
-  return authors[Math.floor(Math.random() * authors.length)];
+function generateFirstName() {
+  const firstNames = ['firstName1', 'firstName2', 'firstName3'];
+  return firstNames[Math.floor(Math.random() * firstNames.length)];
+}
+
+function generateLastName() {
+  const lastNames = ['lastName1', 'lastName2', 'lastName3'];
+  return lastNames[Math.floor(Math.random() * lastNames.length)];
 }
 
 
@@ -57,7 +67,10 @@ function generateBlogPostData() {
   return {
     title: generateTitle(),
     content: generateContent(),
-    authorName: generateAuthor()
+    author: {
+      firstName: generateFirstName(),
+      lastName: generateLastName()
+    }
   };
 }
 
@@ -92,15 +105,12 @@ describe('Blog Posts API resource', function() {
       return chai.request(app)
         .get('/posts')
         .then(function(_res) {
-          // console.log(_res.body);
           res = _res;
-          console.log(res.body);
           res.status.should.be.equal(200);
           res.body.should.have.length.of.at.least(1);
           return BlogPost.count();
         })
         .then(function(count) {
-          console.log(count);
           res.body.length.should.be.equal(count);
         });
     });
@@ -133,12 +143,37 @@ describe('Blog Posts API resource', function() {
 
   //Post
   describe('POST endpoint', function() {
-
+    it('should add a new blog post', function() {
+      const newBlogPost = generateBlogPostData(); 
+      // console.log(newBlogPost);
+      return chai.request(app)
+        .post('/posts')
+        .send(newBlogPost)
+        .then(function(res) {
+          res.status.should.be.equal(201);
+          res.should.be.json;
+          res.body.should.be.a('object');
+          res.body.should.include.keys('id', 'title', 'author', 'content', 'created');
+          res.body.title.should.equal(newBlogPost.title);
+          res.body.content.should.equal(newBlogPost.content);
+          res.body.author.should.equal(newBlogPost.author.firstName + ' ' + newBlogPost.author.lastName);          
+          res.body.id.should.not.be.null;
+          return BlogPost.findById(res.body.id);
+        })
+        .then(function(blog) {
+          console.log(blog.author);
+          console.log(newBlogPost.author);
+          blog.title.should.equal(newBlogPost.title);
+          blog.content.should.equal(newBlogPost.content);
+          blog.author.firstName.should.equal(newBlogPost.author.firstName);
+          blog.author.lastName.should.equal(newBlogPost.author.lastName);
+        });
+    });
   });
 
   //Put
   describe('PUT endpoint', function() {
-
+    
   });
 
   //Delete
