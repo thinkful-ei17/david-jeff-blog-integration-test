@@ -5,7 +5,9 @@ const chaiHttp = require('chai-http');
 const faker = require('faker');
 const mongoose = require('mongoose');
 
-const should = chai.should;
+const should = chai.should();
+const expect = chai.expect;
+
 
 const {BlogPost} = require('../models');
 const {runServer, app, closeServer} = require('../server');
@@ -22,7 +24,7 @@ function seedBlogPostData() {
 
   for (let i=1; i<=10; i++) {
     seedData.push(generateBlogPostData());
-
+  }
   return BlogPost.insertMany(seedData);
 }
 
@@ -36,17 +38,27 @@ function generateContent() {
   return contents[Math.floor(Math.random() * contents.length)];
 }
 
+// function generateAuthor() {
+//   const authors = ['Author #1', 'Author #2', 'Author #3'];
+//   const author =  authors[Math.floor(Math.random() * authors.length)];
+//   return {
+//     firstName: author.firstName,
+//     lastName: author.lastName
+//   };
+// }
+
 function generateAuthor() {
   const authors = ['Author #1', 'Author #2', 'Author #3'];
   return authors[Math.floor(Math.random() * authors.length)];
 }
 
+
 function generateBlogPostData() {
   return {
     title: generateTitle(),
     content: generateContent(),
-    author: generateAuthor()
-  }
+    authorName: generateAuthor()
+  };
 }
 
 function tearDownDb() {
@@ -61,7 +73,7 @@ describe('Blog Posts API resource', function() {
   });
 
   beforeEach(function() {
-    return seedData;
+    return seedBlogPostData();
   });
 
   afterEach(function() {
@@ -76,18 +88,45 @@ describe('Blog Posts API resource', function() {
   describe('GET endpoint', function() {
     it('should return all blog posts', function() {
       let res;
-      console.log(seedData);
+      // console.log(seedData);
       return chai.request(app)
         .get('/posts')
         .then(function(_res) {
-          console.log(_res);
+          // console.log(_res.body);
           res = _res;
-          res.should.have.status(200);
-          (res.body.posts).should.have.length.of.at.least(1);
-          return seedData.count();
+          console.log(res.body);
+          res.status.should.be.equal(200);
+          res.body.should.have.length.of.at.least(1);
+          return BlogPost.count();
         })
         .then(function(count) {
-          (res.body.posts).should.have.length.of(count);
+          console.log(count);
+          res.body.length.should.be.equal(count);
+        });
+    });
+
+    it('should return blog posts with right fields', function() {
+      let resPost;
+      return chai.request(app)
+        .get('/posts')
+        .then(function(res) {
+          res.status.should.be.equal(200);
+          res.should.be.json;
+          res.body.should.be.a('array');
+          res.body.should.have.length.of.at.least(1);
+        
+          res.body.forEach(function(blog) {
+            blog.should.be.a('object');
+            blog.should.include.keys('id', 'title', 'author', 'content', 'created');
+          });
+          resPost = res.body[0];
+          return BlogPost.findById(resPost.id);
+        })
+        .then(function(blog) {
+          blog.id.should.equal(resPost.id);
+          blog.title.should.equal(resPost.title);
+          blog.content.should.equal(resPost.content);
+          blog.authorName.should.equal(resPost.author);
         });
     });
   });
@@ -108,7 +147,3 @@ describe('Blog Posts API resource', function() {
 
   });
 });
-
-
-
-
