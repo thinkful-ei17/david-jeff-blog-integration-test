@@ -173,12 +173,36 @@ describe('Blog Posts API resource', function() {
 
   //Put
   describe('PUT endpoint', function() {
-    
+    it('should update field you send over', function() {
+      const updateData = {
+        title: 'new title',
+        content: 'new content'
+      };
+
+      return BlogPost
+        .findOne()
+        .then(function(blog) {
+          updateData.id = blog.id;
+
+          return chai.request(app)
+            .put(`/posts/${blog.id}`)
+            .send(updateData);
+        })
+        .then(function(res) {
+          res.status.should.be.equal(204);
+
+          return BlogPost.findById(updateData.id);
+        })
+        .then(function(blog) {
+          blog.title.should.equal(updateData.title);
+          blog.content.should.equal(updateData.content);
+        });
+    });
   });
 
   //Delete
 
   describe('DELETE endpoint', function() {
-
+    it('delete a restaurant by id',)
   });
 });
